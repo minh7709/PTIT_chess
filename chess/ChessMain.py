@@ -1,6 +1,6 @@
  #Dùng pygame để tạo giao diện đồ họa   
 import pygame as p
-import ChessEngine, ChessAI #Engine : quản lý logic chessAI: tạo nước đi cho AI
+import ChessEngine, ChessAI #Engine : quản lý logic ChessAI: tạo nước đi cho AI
 import sys  
 from multiprocessing import Process, Queue
   
@@ -44,7 +44,7 @@ def main():
     move_finder_process = None
     move_log_font = p.font.SysFont("Times new roman", 15, True, False)
     player_one = True  # neu nguoi choi quan trang, thi la True, else False
-    player_two = False  # neu may choi quan trang, thi la True, else False
+    player_two = False  # neu nguoi choi quan den, thi la True, else False
 
     while running:
         human_turn = (game_state.white_to_move and player_one) or (not game_state.white_to_move and player_two)
@@ -99,19 +99,18 @@ def main():
                         move_finder_process.terminate()
                         ai_thinking = False
                     move_undone = True
-
         # AI move finder
         if not game_over and not human_turn and not move_undone:
             if not ai_thinking:
                 ai_thinking = True
                 return_queue = Queue()  # used to pass data between threads
-                move_finder_process = Process(target=ChessAI.findBestMove, args=(game_state, valid_moves, return_queue))
+                move_finder_process = Process(target=ChessAI.find_best_move, args=(game_state, valid_moves, return_queue))
                 move_finder_process.start()
 
             if not move_finder_process.is_alive():
                 ai_move = return_queue.get()
                 if ai_move is None:
-                    ai_move = ChessAI.findRandomMove(valid_moves)
+                    ai_move = ChessAI.find_best_move(valid_moves)
                 game_state.makeMove(ai_move)
                 move_made = True
                 animate = True
@@ -142,7 +141,7 @@ def main():
             drawEndGameText(screen, "Stalemate")
 
         clock.tick(MAX_FPS)
-        p.display.flip()
+        p.display.flip()  # refresh the screen
 
 
 def drawGameState(screen, game_state, valid_moves, square_selected):
