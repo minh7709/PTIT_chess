@@ -1,6 +1,4 @@
 
-
-
 class GameState:
     def __init__(self):
        
@@ -204,7 +202,7 @@ class GameState:
                 self.checkmate = True
             else:
                 # TODO stalemate on repeated moves
-                self.stalemate = True
+                stalemate = True
         else:
             self.checkmate = False
             self.stalemate = False

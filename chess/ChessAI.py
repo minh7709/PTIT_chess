@@ -94,11 +94,6 @@ def find_best_move(game_state, valid_moves, return_queue):
     global next_move, DEPTH
     next_move = None
 
-    # Nếu không có nước đi hợp lệ, trả về None
-    if not valid_moves:
-        return_queue.put(None)
-        return
-
     # Kiểm tra sách khai cuộc (nếu có)
     book_move = get_book_move(game_state, valid_moves)
     if book_move is not None:
