@@ -1,11 +1,11 @@
  #Dùng pygame để tạo giao diện đồ họa   
 import pygame as p
-import ChessEngine, ChessAI #Engine : quản lý logic ChessAI: tạo nước đi cho AI
+import ChessEngine, ChessAI #Engine : quản lý logic chess,AI: tạo nước đi cho AI
 import sys  
 from multiprocessing import Process, Queue
-  
+
 BOARD_WIDTH = BOARD_HEIGHT = 512
-MOVE_LOG_PANEL_WIDTH = 300 # độ dài của bảng ghi chép nước đi
+MOVE_LOG_PANEL_WIDTH = 250 # độ dài của bảng ghi chép nước đi
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8 # số hàng,cột trên bàn cờ
 SQUARE_SIZE = BOARD_HEIGHT // DIMENSION
@@ -32,19 +32,18 @@ def main():
     game_state = ChessEngine.GameState()
     valid_moves = game_state.getValidMoves() # lấy list nước đi hợp lệ cho lượt hiên tại
     move_made = False  # flag variable xem nước đi mới đã thực hiện chưa
-    animate = False  # cho biet khi nao nen animate
-    loadImages()  
+    animate = False  # flag variable for when we should animate a move
+    loadImages()  # do this only once before while loop
     running = True
-    
     square_selected = ()  # no square is selected initially, this will keep track of the last click of the user (tuple(row,col))
     player_clicks = []  # this will keep track of player clicks (two tuples)
     game_over = False
     ai_thinking = False
     move_undone = False
     move_finder_process = None
-    move_log_font = p.font.SysFont("Times new roman", 15, True, False)
-    player_one = True  # neu nguoi choi quan trang, thi la True, else False
-    player_two = False  # neu nguoi choi quan den, thi la True, else False
+    move_log_font = p.font.SysFont("Arial", 14, False, False)
+    player_one = True  # if a human is playing white, then this will be True, else False
+    player_two = False  # if a hyman is playing white, then this will be True, else False
 
     while running:
         human_turn = (game_state.white_to_move and player_one) or (not game_state.white_to_move and player_two)
@@ -99,18 +98,19 @@ def main():
                         move_finder_process.terminate()
                         ai_thinking = False
                     move_undone = True
+
         # AI move finder
         if not game_over and not human_turn and not move_undone:
             if not ai_thinking:
                 ai_thinking = True
                 return_queue = Queue()  # used to pass data between threads
-                move_finder_process = Process(target=ChessAI.find_best_move, args=(game_state, valid_moves, return_queue))
+                move_finder_process = Process(target=ChessAI.findBestMove, args=(game_state, valid_moves, return_queue))
                 move_finder_process.start()
 
             if not move_finder_process.is_alive():
                 ai_move = return_queue.get()
                 if ai_move is None:
-                    ai_move = ChessAI.find_best_move(valid_moves)
+                    ai_move = ChessAI.findRandomMove(valid_moves)
                 game_state.makeMove(ai_move)
                 move_made = True
                 animate = True
@@ -141,7 +141,7 @@ def main():
             drawEndGameText(screen, "Stalemate")
 
         clock.tick(MAX_FPS)
-        p.display.flip()  # refresh the screen
+        p.display.flip()
 
 
 def drawGameState(screen, game_state, valid_moves, square_selected):
@@ -159,7 +159,7 @@ def drawBoard(screen):
     The top left square is always light.
     """
     global colors
-    colors = [p.Color("#F0D9B5"), p.Color("#B58863")]
+    colors = [p.Color("white"), p.Color("gray")]
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             color = colors[((row + column) % 2)]
@@ -209,7 +209,7 @@ def drawMoveLog(screen, game_state, font):
 
     """
     move_log_rect = p.Rect(BOARD_WIDTH, 0, MOVE_LOG_PANEL_WIDTH, MOVE_LOG_PANEL_HEIGHT)
-    p.draw.rect(screen, p.Color('white'), move_log_rect)
+    p.draw.rect(screen, p.Color('black'), move_log_rect)
     move_log = game_state.move_log
     move_texts = []
     for i in range(0, len(move_log), 2):
@@ -228,14 +228,14 @@ def drawMoveLog(screen, game_state, font):
             if i + j < len(move_texts):
                 text += move_texts[i + j]
 
-        text_object = font.render(text, True, p.Color('black'))
+        text_object = font.render(text, True, p.Color('white'))
         text_location = move_log_rect.move(padding, text_y)
         screen.blit(text_object, text_location)
         text_y += text_object.get_height() + line_spacing
 
 
 def drawEndGameText(screen, text):
-    font = p.font.SysFont("Times new roman", 32, True, False)
+    font = p.font.SysFont("Helvetica", 32, True, False)
     text_object = font.render(text, False, p.Color("gray"))
     text_location = p.Rect(0, 0, BOARD_WIDTH, BOARD_HEIGHT).move(BOARD_WIDTH / 2 - text_object.get_width() / 2,
                                                                  BOARD_HEIGHT / 2 - text_object.get_height() / 2)

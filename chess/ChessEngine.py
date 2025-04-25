@@ -1,4 +1,6 @@
 
+
+
 class GameState:
     def __init__(self):
        
@@ -11,7 +13,6 @@ class GameState:
             ["--", "--", "--", "--", "--", "--", "--", "--"],
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]]
-            
         self.moveFunctions = {"p": self.getPawnMoves, "R": self.getRookMoves, "N": self.getKnightMoves,
                               "B": self.getBishopMoves, "Q": self.getQueenMoves, "K": self.getKingMoves}
         self.white_to_move = True
@@ -202,7 +203,7 @@ class GameState:
                 self.checkmate = True
             else:
                 # TODO stalemate on repeated moves
-                stalemate = True
+                self.stalemate = True
         else:
             self.checkmate = False
             self.stalemate = False
