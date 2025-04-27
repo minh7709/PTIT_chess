@@ -1,6 +1,6 @@
  #Dùng pygame để tạo giao diện đồ họa   
 import pygame as p
-import ChessEngine, ChessAI #Engine : quản lý logic chess,AI: tạo nước đi cho AI
+import ChessEngine, ChessAI1 #Engine : quản lý logic chess,AI: tạo nước đi cho AI
 import sys  
 from multiprocessing import Process, Queue
 
@@ -12,6 +12,8 @@ SQUARE_SIZE = BOARD_HEIGHT // DIMENSION
 MAX_FPS = 15
 IMAGES = {}
 
+p.init() #Khởi tạo pygame
+font_idx = p.font.SysFont("Times New Roman", 15, True, False)
 
 def loadImages():
    # Hàm dùng để tải hình ảnh các quân cờ từ thư mục image có sẵn
@@ -25,7 +27,6 @@ def main():
     The main driver for our code.
     This will handle user input and updating the graphics.
     """
-    p.init() #Khởi tạo pygame
     screen = p.display.set_mode((BOARD_WIDTH + MOVE_LOG_PANEL_WIDTH, BOARD_HEIGHT)) # tạo cửa sổ trò chơi
     clock = p.time.Clock() # > kiểm soát tốc độ khung hình và thời gian
     screen.fill(p.Color("white")) #để board full white
@@ -41,7 +42,7 @@ def main():
     ai_thinking = False
     move_undone = False
     move_finder_process = None
-    move_log_font = p.font.SysFont("Arial", 14, False, False)
+    move_log_font = p.font.SysFont("Times New Roman", 15, True, False)
     player_one = True  # if a human is playing white, then this will be True, else False
     player_two = False  # if a hyman is playing white, then this will be True, else False
 
@@ -67,6 +68,7 @@ def main():
                         move = ChessEngine.Move(player_clicks[0], player_clicks[1], game_state.board)
                         for i in range(len(valid_moves)):
                             if move == valid_moves[i]:
+                                print(move.getChessNotation())  # print the move in chess notation
                                 game_state.makeMove(valid_moves[i])
                                 move_made = True
                                 animate = True
@@ -104,13 +106,13 @@ def main():
             if not ai_thinking:
                 ai_thinking = True
                 return_queue = Queue()  # used to pass data between threads
-                move_finder_process = Process(target=ChessAI.findBestMove, args=(game_state, valid_moves, return_queue))
+                move_finder_process = Process(target=ChessAI1.findBestMove, args=(game_state, valid_moves, return_queue))
                 move_finder_process.start()
 
             if not move_finder_process.is_alive():
                 ai_move = return_queue.get()
                 if ai_move is None:
-                    ai_move = ChessAI.findRandomMove(valid_moves)
+                    ai_move = ChessAI1.findRandomMove(valid_moves)
                 game_state.makeMove(ai_move)
                 move_made = True
                 animate = True
@@ -139,7 +141,7 @@ def main():
         elif game_state.stalemate:
             game_over = True
             drawEndGameText(screen, "Stalemate")
-
+        
         clock.tick(MAX_FPS)
         p.display.flip()
 
@@ -158,12 +160,25 @@ def drawBoard(screen):
     Draw the squares on the board.
     The top left square is always light.
     """
-    global colors
-    colors = [p.Color("white"), p.Color("gray")]
+    global colors, font_idx   
+    colors = [p.Color("#f0d9b5"), p.Color("#b58863")]
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             color = colors[((row + column) % 2)]
             p.draw.rect(screen, color, p.Rect(column * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+    idx = 1
+    for file in 'abcdefgh':
+        text_surface = font_idx.render(file, True, p.Color("black"))
+        text_rect_file = text_surface.get_rect()
+        text_rect_file.topleft = (idx* SQUARE_SIZE - 10, BOARD_HEIGHT - 20)
+        screen.blit(text_surface, text_rect_file)        
+
+        text_surface_rank = font_idx.render(str(9-idx), True, p.Color("black"))
+        text_rect_rank = text_surface_rank.get_rect()
+        text_rect_rank.topleft = (2, (idx-1) * SQUARE_SIZE + 2)
+        screen.blit(text_surface_rank, text_rect_rank)
+        idx += 1
+
 
 
 def highlightSquares(screen, game_state, valid_moves, square_selected):

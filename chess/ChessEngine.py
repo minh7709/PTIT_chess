@@ -100,8 +100,7 @@ class GameState:
 
             # undo castle rights
             self.castle_rights_log.pop()  # get rid of the new castle rights from the move we are undoing
-            self.current_castling_rights = self.castle_rights_log[
-                -1]  # set the current castle rights to the last one in the list
+            self.current_castling_rights = self.castle_rights_log[-1]  # set the current castle rights to the last one in the list
             # undo the castle move
             if move.is_castle_move:
                 if move.end_col - move.start_col == 2:  # king-side
@@ -569,6 +568,7 @@ class Move:
                 self.piece_moved == "bp" and self.end_row == 7)
         # en passant
         self.is_enpassant_move = is_enpassant_move
+        #print(self.start_row, self.start_col, self.end_row, self.end_col)
         if self.is_enpassant_move:
             self.piece_captured = "wp" if self.piece_moved == "bp" else "bp"
         # castle move
@@ -578,9 +578,6 @@ class Move:
         self.moveID = self.start_row * 1000 + self.start_col * 100 + self.end_row * 10 + self.end_col
 
     def __eq__(self, other):
-        """
-        Overriding the equals method.
-        """
         if isinstance(other, Move):
             return self.moveID == other.moveID
         return False
@@ -610,8 +607,6 @@ class Move:
 
         # TODO Disambiguating moves
 
-    def getRankFile(self, row, col):
-        return self.cols_to_files[col] + self.rows_to_ranks[row]
 
     def __str__(self):
         if self.is_castle_move:
@@ -629,3 +624,6 @@ class Move:
         if self.is_capture:
             move_string += "x"
         return move_string + end_square
+    
+    def getRankFile(self, row, col):
+        return self.cols_to_files[col] + self.rows_to_ranks[row]
