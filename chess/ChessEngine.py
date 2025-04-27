@@ -1,5 +1,5 @@
 
-
+piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1, "-": 0}
 
 class GameState:
     def __init__(self):
@@ -30,7 +30,7 @@ class GameState:
         self.castle_rights_log = [CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks,
                                                self.current_castling_rights.wqs, self.current_castling_rights.bqs)]
 
-    def makeMove(self, move):
+    def makeMove(self, move, is_AI = True):
         #Thực hiện nước đi được chọn và cập nhật trạng thái trò chơi
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
@@ -44,12 +44,12 @@ class GameState:
 
         # pawn promotion
         if move.is_pawn_promotion:
-            # if not is_AI:
-            #    promoted_piece = input("Promote to Q, R, B, or N:") #take this to UI later
-            #    self.board[move.end_row][move.end_col] = move.piece_moved[0] + promoted_piece
-            # else:
-            self.board[move.end_row][move.end_col] = move.piece_moved[0] + "Q"
-
+            if not is_AI:
+                move.promoted_piece = input("Promotion: 1: Queen, 2: Rook, 3:Bishop, or 4: Knight, take input: ").strip() #take this to UI later
+                if move.promoted_piece not in move.promotion_table:
+                    promoted_piece = '1'
+            self.board[move.end_row][move.end_col] = move.piece_moved[0] + move.promotion_table[move.promoted_piece]
+    
         # enpassant move
         if move.is_enpassant_move:
             self.board[move.start_row][move.end_col] = "--"  # capturing the pawn
@@ -557,12 +557,14 @@ class Move:
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
     def __init__(self, start_square, end_square, board, is_enpassant_move=False, is_castle_move=False):
+        self.promotion_table = {'1': 'Q', '2': 'R', '3': 'B', '4': 'N'}
         self.start_row = start_square[0]
         self.start_col = start_square[1]
         self.end_row = end_square[0]
         self.end_col = end_square[1]
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
+        self.promoted_piece = '1'
         # pawn promotion
         self.is_pawn_promotion = (self.piece_moved == "wp" and self.end_row == 0) or (
                 self.piece_moved == "bp" and self.end_row == 7)
@@ -582,28 +584,28 @@ class Move:
             return self.moveID == other.moveID
         return False
 
-    def getChessNotation(self):
-        if self.is_pawn_promotion:
-            return self.getRankFile(self.end_row, self.end_col) + "Q"
-        if self.is_castle_move:
-            if self.end_col == 1:
-                return "0-0-0"
-            else:
-                return "0-0"
-        if self.is_enpassant_move:
-            return self.getRankFile(self.start_row, self.start_col)[0] + "x" + self.getRankFile(self.end_row,
-                                                                                                self.end_col) + " e.p."
-        if self.piece_captured != "--":
-            if self.piece_moved[1] == "p":
-                return self.getRankFile(self.start_row, self.start_col)[0] + "x" + self.getRankFile(self.end_row,
-                                                                                                    self.end_col)
-            else:
-                return self.piece_moved[1] + "x" + self.getRankFile(self.end_row, self.end_col)
-        else:
-            if self.piece_moved[1] == "p":
-                return self.getRankFile(self.end_row, self.end_col)
-            else:
-                return self.piece_moved[1] + self.getRankFile(self.end_row, self.end_col)
+    # def getChessNotation(self):
+    #     if self.is_pawn_promotion:
+    #         return self.getRankFile(self.end_row, self.end_col) + "Q"
+    #     if self.is_castle_move:
+    #         if self.end_col == 1:
+    #             return "0-0-0"
+    #         else:
+    #             return "0-0"
+    #     if self.is_enpassant_move:
+    #         return self.getRankFile(self.start_row, self.start_col)[0] + "x" + self.getRankFile(self.end_row,
+    #                                                                                             self.end_col) + " e.p."
+    #     if self.piece_captured != "--":
+    #         if self.piece_moved[1] == "p":
+    #             return self.getRankFile(self.start_row, self.start_col)[0] + "x" + self.getRankFile(self.end_row,
+    #                                                                                                 self.end_col)
+    #         else:
+    #             return self.piece_moved[1] + "x" + self.getRankFile(self.end_row, self.end_col)
+    #     else:
+    #         if self.piece_moved[1] == "p":
+    #             return self.getRankFile(self.end_row, self.end_col)
+    #         else:
+    #             return self.piece_moved[1] + self.getRankFile(self.end_row, self.end_col)
 
         # TODO Disambiguating moves
 
@@ -618,7 +620,7 @@ class Move:
             if self.is_capture:
                 return self.cols_to_files[self.start_col] + "x" + end_square
             else:
-                return end_square + "Q" if self.is_pawn_promotion else end_square
+                return end_square + self.promotion_table[self.promoted_piece] if self.is_pawn_promotion else end_square
 
         move_string = self.piece_moved[1]
         if self.is_capture:

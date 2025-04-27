@@ -1,11 +1,11 @@
  #Dùng pygame để tạo giao diện đồ họa   
 import pygame as p
-import ChessEngine, ChessAI1 #Engine : quản lý logic chess,AI: tạo nước đi cho AI
+import ChessEngine, ChessAI #Engine : quản lý logic chess,AI: tạo nước đi cho AI
 import sys  
 from multiprocessing import Process, Queue
 
 BOARD_WIDTH = BOARD_HEIGHT = 512
-MOVE_LOG_PANEL_WIDTH = 250 # độ dài của bảng ghi chép nước đi
+MOVE_LOG_PANEL_WIDTH = 300 # độ dài của bảng ghi chép nước đi
 MOVE_LOG_PANEL_HEIGHT = BOARD_HEIGHT
 DIMENSION = 8 # số hàng,cột trên bàn cờ
 SQUARE_SIZE = BOARD_HEIGHT // DIMENSION
@@ -43,7 +43,7 @@ def main():
     move_undone = False
     move_finder_process = None
     move_log_font = p.font.SysFont("Times New Roman", 15, True, False)
-    player_one = True  # if a human is playing white, then this will be True, else False
+    player_one = False  # if a human is playing white, then this will be True, else False
     player_two = False  # if a hyman is playing white, then this will be True, else False
 
     while running:
@@ -68,8 +68,7 @@ def main():
                         move = ChessEngine.Move(player_clicks[0], player_clicks[1], game_state.board)
                         for i in range(len(valid_moves)):
                             if move == valid_moves[i]:
-                                print(move.getChessNotation())  # print the move in chess notation
-                                game_state.makeMove(valid_moves[i])
+                                game_state.makeMove(valid_moves[i], is_AI=False)
                                 move_made = True
                                 animate = True
                                 square_selected = ()  # reset user clicks
@@ -106,13 +105,13 @@ def main():
             if not ai_thinking:
                 ai_thinking = True
                 return_queue = Queue()  # used to pass data between threads
-                move_finder_process = Process(target=ChessAI1.findBestMove, args=(game_state, valid_moves, return_queue))
+                move_finder_process = Process(target=ChessAI.findBestMove, args=(game_state, valid_moves, return_queue))
                 move_finder_process.start()
 
             if not move_finder_process.is_alive():
                 ai_move = return_queue.get()
                 if ai_move is None:
-                    ai_move = ChessAI1.findRandomMove(valid_moves)
+                    ai_move = ChessAI.findRandomMove(valid_moves)
                 game_state.makeMove(ai_move)
                 move_made = True
                 animate = True
@@ -141,7 +140,6 @@ def main():
         elif game_state.stalemate:
             game_over = True
             drawEndGameText(screen, "Stalemate")
-        
         clock.tick(MAX_FPS)
         p.display.flip()
 
