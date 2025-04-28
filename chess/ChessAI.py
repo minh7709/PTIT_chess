@@ -4,7 +4,7 @@ Có sử dụng thuật toán Negamax và cắt tỉa Alpha-beta
 """
 import random
 
-piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1}
+piece_score = {"K": 0.0, "Q": 9.0, "R": 5.0, "B": 3.0, "N": 3.0, "p": 1.0}
 #Đánh giá mức độ quan trọng của từng quân cờ (VD: 0 là không thể để mất,Q là quan trọng nhất và chỉ mang tính tương đối)
 
 knight_scores_opening = [[0.0 , 0.0, 0.0, 0.0, 0.0, 0.0 , 0.0, 0.0],
@@ -43,7 +43,7 @@ queen_scores_opening = [[0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0]]
 
-pawn_scores_opening = [[1, 1, 1, 1, 1, 1, 1, 1],
+pawn_scores_opening = [[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
                [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7],
                [0.3, 0.3, 0.4, 0.5, 0.5, 0.4, 0.3, 0.3],
                [0.25, 0.5, 0.5, 0.5, 0.5, 0.3, 0.25, 0.25],
@@ -79,14 +79,14 @@ bishop_scores_ending = [[0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0],
                  [0.2, 0.6, 0.4, 0.4, 0.4, 0.4, 0.6, 0.2],
                  [0.0, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.0]]
 
-rook_scores_ending = [[0, 0.2, 0.2, 0.2, 0.2, 0.2, 0, 0],
-               [0, 0.2, 0.3, 0.3, 0.3, 0.3, 0.2, 0],
-               [0, 0.2, 0.3, 0.3, 0.3, 0.3, 0.2, 0],
-               [0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0],
-               [0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0],
-               [0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0],
-               [0, 0.2, 0.3, 0.3, 0.3, 0.3, 0.2, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0]]
+rook_scores_ending = [[0, 0.2, 0.4, 0.4, 0.4, 0.2, 0, 0],
+               [0, 0.2, 0.4, 0.4, 0.4, 0.4, 0.2, 0],
+               [0, 0.2, 0.3, 0.4, 0.4, 0.3, 0.2, 0],
+               [0, 0.3, 0.4, 0.4, 0.4, 0.4, 0.3, 0],
+               [0, 0.3, 0.4, 0.4, 0.4, 0.4, 0.3, 0],
+               [0, 0.3, 0.4, 0.4, 0.4, 0.4, 0.3, 0],
+               [0, 0.2, 0.4, 0.4, 0.4, 0.4, 0.2, 0],
+               [0, 0.2, 0.3, 0.4, 0.4, 0.3, 0.2, 0]]
 
 queen_scores_ending = [[0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0],
                 [0.2, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.2],
@@ -97,23 +97,23 @@ queen_scores_ending = [[0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0],
                 [0.2, 0.4, 0.5, 0.4, 0.4, 0.4, 0.4, 0.2],
                 [0.0, 0.2, 0.2, 0.3, 0.3, 0.2, 0.2, 0.0]]
 
-pawn_scores_ending = [[ 6,  6,  6,  6,  6,  6,  6,  6],
-               [ 2 ,  2 ,  2 ,  2 ,  2 ,  2 ,  2 ,  2 ],
+pawn_scores_ending = [[ 6.0,  6.0,  6.0,  6.0,  6.0,  6.0,  6.0,  6.0],
+               [ 3.0,  3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0],
                [0.8 , 0.8 , 0.8 , 0.8 , 0.8 , 0.8 ,0.8 ,0.8 ],
                [ 0.45, 0.45, 0.45, 0.45, 0.45,  0.45, 0.45, 0.45],
                [0.3, 0.3, 0.3, 0.4, 0.4, 0.3, 0.3, 0.3],
                [0.25, 0.15, 0.1, 0.2, 0.2, 0.1, 0.15, 0.25],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0]]
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
 
-king_scores_ending = [[0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0, 0, 0]]
+king_scores_ending = [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
 
 piece_position_scores = {"wN": [knight_scores_opening, knight_scores_ending],
                          "bN": [knight_scores_opening[::-1], knight_scores_ending[::-1]],
@@ -130,7 +130,6 @@ piece_position_scores = {"wN": [knight_scores_opening, knight_scores_ending],
 
 CHECKMATE = 1000
 STALEMATE = 0
-DEPTH = 3
 
 opening_book = {(): ['e2e4', 'g1f3', 'd2d4'],
     ('e2e4',): ['e7e5', 'c7c5', 'e7e6'],
@@ -186,10 +185,10 @@ opening_book = {(): ['e2e4', 'g1f3', 'd2d4'],
     ('d2d4', 'e7e6', 'e2e4'): ['d7d5', 'c7c5', 'b7b6'],
 }
 
-def findBestMove(game_state, valid_moves, return_queue):
-    global next_move, DEPTH
+def findBestMove(game_state, valid_moves, return_queue, max_depth = 3):
+    global next_move
     next_move = None
-    if len(valid_moves) <= 27: DEPTH = 4
+    if len(valid_moves) <= 27 and len(game_state.move_log) > 12: max_depth = 4
  # Kiểm tra opening book trước khi tìm kiếm
     book_move = getBookMove(game_state, valid_moves)
     if book_move is not None:
@@ -197,8 +196,7 @@ def findBestMove(game_state, valid_moves, return_queue):
         return_queue.put(book_move)
         return
 
-    random.shuffle(valid_moves)
-    findMoveNegaMaxAlphaBeta(game_state, valid_moves, DEPTH, -CHECKMATE, CHECKMATE,
+    findMoveNegaMaxAlphaBeta(game_state, valid_moves, max_depth, max_depth, -CHECKMATE, CHECKMATE,
                              1 if game_state.white_to_move else -1)
     return_queue.put(next_move)
 
@@ -222,7 +220,7 @@ def getBookMove(game_state, valid_moves):
                 return move
     return None
 
-def findMoveNegaMaxAlphaBeta(game_state, valid_moves, depth, alpha, beta, turn_multiplier):
+def findMoveNegaMaxAlphaBeta(game_state, valid_moves, depth, max_depth, alpha, beta, turn_multiplier):
     global next_move
     if depth == 0:
         return quiescence_search(game_state, alpha, beta, turn_multiplier)
@@ -233,10 +231,10 @@ def findMoveNegaMaxAlphaBeta(game_state, valid_moves, depth, alpha, beta, turn_m
     for move in valid_moves:
         game_state.makeMove(move)
         next_moves = game_state.getValidMoves()
-        score = -findMoveNegaMaxAlphaBeta(game_state, next_moves, depth - 1, -beta, -alpha, -turn_multiplier)
+        score = -findMoveNegaMaxAlphaBeta(game_state, next_moves, depth - 1, max_depth, -beta, -alpha, -turn_multiplier)
         if score > max_score:
             max_score = score
-            if depth == DEPTH:
+            if depth == max_depth:
                 next_move = move
         game_state.undoMove()
         if max_score > alpha:
@@ -357,19 +355,15 @@ def scoreBoard(game_state):
     # King safety (an toàn của vua): đếm số quân cùng màu xung quanh vua (8 ô xung quanh)
     white_king_pos = game_state.white_king_location
     black_king_pos = game_state.black_king_location
-    
+
     #dem quan tot trang va den truoc mat vua
-    NO_FRONT_PAWN = 0.15
+    NO_FRONT_PAWN = 0.5
     if pawn_files_white[white_king_pos[1]] == 0:
         white_score -= NO_FRONT_PAWN
-    if pawn_files_black[white_king_pos[1]] == 0:
-        white_score -= NO_FRONT_PAWN
     if pawn_files_black[black_king_pos[1]] == 0:
-        black_score -= NO_FRONT_PAWN
-    if pawn_files_white[black_king_pos[1]] == 0:
-        black_score -= NO_FRONT_PAWN    
+        black_score -= NO_FRONT_PAWN  
     
-    if white_cnt + black_cnt <= 20:
+    if white_cnt + black_cnt > 16:
         KING_SAFETY_BONUS = 0.05
         white_king_pos = game_state.white_king_location
         black_king_pos = game_state.black_king_location
@@ -399,11 +393,11 @@ def scoreBoard(game_state):
                         defenders += 1
         black_score += KING_SAFETY_BONUS * defenders
 
-        white_score += piece_position_scores["wK"][1][white_king_pos[0]][white_king_pos[1]]
-        black_score += piece_position_scores["bK"][1][black_king_pos[0]][black_king_pos[1]] 
-    else: 
         white_score += piece_position_scores["wK"][0][white_king_pos[0]][white_king_pos[1]]
-        black_score += piece_position_scores["bK"][0][black_king_pos[0]][black_king_pos[1]]
+        black_score += piece_position_scores["bK"][0][black_king_pos[0]][black_king_pos[1]] 
+    else: 
+        white_score += piece_position_scores["wK"][1][white_king_pos[0]][white_king_pos[1]]
+        black_score += piece_position_scores["bK"][1][black_king_pos[0]][black_king_pos[1]]
 
     #pawns structure: cấu trúc tốt:
     # 1. Doubled
@@ -417,10 +411,14 @@ def scoreBoard(game_state):
     # 2. Isolated
     ISOLATED_PAWN_PENALTY = 0.2
     for (_, c) in white_pawns:
-        if (c-1 not in pawn_files_white) and (c+1 not in pawn_files_white):
+        left_empty  = (c == 0) or (pawn_files_white[c-1] == 0)
+        right_empty = (c == 7) or (pawn_files_white[c+1] == 0)
+        if left_empty and right_empty:
             white_score -= ISOLATED_PAWN_PENALTY
     for (_, c) in black_pawns:
-        if (c-1 not in pawn_files_black) and (c+1 not in pawn_files_black):
+        left_empty  = (c == 0) or (pawn_files_black[c-1] == 0)
+        right_empty = (c == 7) or (pawn_files_black[c+1] == 0)
+        if left_empty and right_empty:
             black_score -= ISOLATED_PAWN_PENALTY
 
     # 3. Passed

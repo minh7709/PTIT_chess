@@ -43,7 +43,7 @@ def main():
     move_undone = False
     move_finder_process = None
     move_log_font = p.font.SysFont("Times New Roman", 15, True, False)
-    player_one = False  # if a human is playing white, then this will be True, else False
+    player_one = True  # if a human is playing white, then this will be True, else False
     player_two = False  # if a hyman is playing white, then this will be True, else False
 
     while running:
@@ -159,7 +159,7 @@ def drawBoard(screen):
     The top left square is always light.
     """
     global colors, font_idx   
-    colors = [p.Color("#f0d9b5"), p.Color("#b58863")]
+    colors = [p.Color("#f0d9b5"), p.Color("#ea7938")]
     for row in range(DIMENSION):
         for column in range(DIMENSION):
             color = colors[((row + column) % 2)]
