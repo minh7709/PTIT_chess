@@ -1,6 +1,4 @@
 
-piece_score = {"K": 0, "Q": 9, "R": 5, "B": 3, "N": 3, "p": 1, "-": 0}
-
 class GameState:
     def __init__(self):
        
@@ -45,10 +43,10 @@ class GameState:
         # pawn promotion
         if move.is_pawn_promotion:
             if not is_AI:
-                move.promoted_piece = input("Promotion: 1: Queen, 2: Rook, 3:Bishop, or 4: Knight, take input: ").strip() #take this to UI later
-                if move.promoted_piece not in move.promotion_table:
-                    promoted_piece = '1'
-            self.board[move.end_row][move.end_col] = move.piece_moved[0] + move.promotion_table[move.promoted_piece]
+                move.promoted_piece = input("Promotion (mac dinh la Hau/Queen): Q, R, B or N: ").strip() #take this to UI later
+                if move.promoted_piece not in ["Q", "R", "B", "N"]:
+                    move.promoted_piece = 'Q'
+            self.board[move.end_row][move.end_col] = move.piece_moved[0] + move.promoted_piece  # promote pawn to new piece
     
         # enpassant move
         if move.is_enpassant_move:
@@ -557,14 +555,13 @@ class Move:
     cols_to_files = {v: k for k, v in files_to_cols.items()}
 
     def __init__(self, start_square, end_square, board, is_enpassant_move=False, is_castle_move=False):
-        self.promotion_table = {'1': 'Q', '2': 'R', '3': 'B', '4': 'N'}
         self.start_row = start_square[0]
         self.start_col = start_square[1]
         self.end_row = end_square[0]
         self.end_col = end_square[1]
         self.piece_moved = board[self.start_row][self.start_col]
         self.piece_captured = board[self.end_row][self.end_col]
-        self.promoted_piece = '1'
+        self.promoted_piece = 'Q'  # default promotion to queen
         # pawn promotion
         self.is_pawn_promotion = (self.piece_moved == "wp" and self.end_row == 0) or (
                 self.piece_moved == "bp" and self.end_row == 7)
@@ -620,7 +617,7 @@ class Move:
             if self.is_capture:
                 return self.cols_to_files[self.start_col] + "x" + end_square
             else:
-                return end_square + self.promotion_table[self.promoted_piece] if self.is_pawn_promotion else end_square
+                return end_square + self.promoted_piece if self.is_pawn_promotion else end_square
 
         move_string = self.piece_moved[1]
         if self.is_capture:
