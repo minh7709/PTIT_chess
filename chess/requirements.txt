@@ -1,1 +1,1 @@
-pygame ChessEngine ChessAI sys multiprocessing
+pygame==2.6.1
