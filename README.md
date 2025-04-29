@@ -10,7 +10,7 @@
 - **Mục tiêu**: Xây dựng một game cờ vua có giao diện đồ họa đơn giản, cho phép người chơi với máy (AI).  
 - **Yêu cầu**:
   - Hiển thị bàn cờ 8×8, quản lý trạng thái bằng mảng 2 chiều (`board[row][col]`), xây dựng luật lệ trong trò chơi giống với luật cờ vua thực tế.
-  - Người chời thực hiện nước đi bằng chuột khi đến lượt của mình
+  - Người chơi thực hiện nước đi bằng chuột khi đến lượt của mình.
   - Khi người chơi thực hiện xong nước đi AI thực hiện nước đi tốt nhất, hiện lên giao diện sau khi chạy xong thuật toán.
   - Người chơi và AI sẽ thực hiện nước đi lần lượt cho đến khi một bên bị chiếu hết hoặc hòa cờ thì trò chơi kết thúc.
 
