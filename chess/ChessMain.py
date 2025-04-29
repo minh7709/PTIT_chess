@@ -80,7 +80,6 @@ def main():
                     game_over = False
                     if ai_thinking:
                         move_finder_process.terminate()
-                        move_finder_process.join()  # wait for the process to finish
                         ai_thinking = False
                     move_undone = True
                 if e.key == p.K_r:  # reset the game when 'r' is pressed
@@ -93,7 +92,6 @@ def main():
                     game_over = False
                     if ai_thinking:
                         move_finder_process.terminate()
-                        move_finder_process.join()  # wait for the process to finish
                         ai_thinking = False
                     move_undone = True
 
@@ -106,7 +104,6 @@ def main():
                 move_finder_process.start()
 
             if not move_finder_process.is_alive():
-                move_finder_process.join() 
                 ai_move = return_queue.get()
                 if ai_move is None:
                     ai_move = AI.findRandomMove(valid_moves)
