@@ -48,7 +48,7 @@ def main():
                 p.quit()
                 sys.exit()
             # mouse handler
-            elif e.type == p.MOUSEBUTTONDOWN:
+            elif e.type == p.MOUSEBUTTONDOWN and human_turn:
                 if not game_over:
                     location = p.mouse.get_pos()  # (x, y) location of the mouse
                     col = location[0] // SQUARE_SIZE
@@ -59,7 +59,7 @@ def main():
                     else:
                         square_selected = (row, col)
                         player_clicks.append(square_selected)  # append for both 1st and 2nd click
-                    if len(player_clicks) == 2 and human_turn:  # after 2nd click
+                    if len(player_clicks) == 2:  # after 2nd click
                         move = ChessEngine.Move(player_clicks[0], player_clicks[1], game_state.board)
                         for i in range(len(valid_moves)):
                             if move == valid_moves[i]:
