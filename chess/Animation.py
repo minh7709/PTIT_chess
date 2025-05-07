@@ -118,6 +118,30 @@ def drawEndGameText(screen, text):
     text_object = font.render(text, False, p.Color('black'))
     screen.blit(text_object, text_location.move(2, 2))
 
+def choosePromotion(screen):
+    """
+    Cho người chơi chọn quân phong hậu bằng cách nhấn phím Q/R/B/N
+    """
+    font = p.font.SysFont("Arial", 24, True, False)
+    text = font.render("Promote to (Q)ueen, (R)ook, (B)ishop, (N)ight:", True, p.Color('black'))
+    rect = text.get_rect(center=(BOARD_WIDTH // 2, BOARD_HEIGHT // 2))
+    screen.blit(text, rect)
+    p.display.flip()
+
+    while True:
+        for e in p.event.get():
+            if e.type == p.QUIT:
+                p.quit()
+                sys.exit()
+            if e.type == p.KEYDOWN:
+                if e.key == p.K_r:
+                    return 'R'
+                elif e.key == p.K_b:
+                    return 'B'
+                elif e.key == p.K_n:
+                    return 'N'
+                else:
+                    return 'Q'
 
 def animateMove(move, screen, board, clock):
     """

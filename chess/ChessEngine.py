@@ -28,7 +28,7 @@ class GameState:
         self.castle_rights_log = [CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks,
                                                self.current_castling_rights.wqs, self.current_castling_rights.bqs)]
 
-    def makeMove(self, move, is_AI = True):
+    def makeMove(self, move, pr_piece = 'Q'):
         #Thực hiện nước đi được chọn và cập nhật trạng thái trò chơi
         self.board[move.start_row][move.start_col] = "--"
         self.board[move.end_row][move.end_col] = move.piece_moved
@@ -42,10 +42,7 @@ class GameState:
 
         # pawn promotion
         if move.is_pawn_promotion:
-            if not is_AI:
-                move.promoted_piece = input("Promotion (mac dinh la Hau/Queen): Q, R, B or N: ").strip() #take this to UI later
-                if move.promoted_piece not in ["Q", "R", "B", "N"]:
-                    move.promoted_piece = 'Q'
+            move.promoted_piece = pr_piece
             self.board[move.end_row][move.end_col] = move.piece_moved[0] + move.promoted_piece  # promote pawn to new piece
     
         # enpassant move
@@ -75,6 +72,13 @@ class GameState:
         self.updateCastleRights(move)
         self.castle_rights_log.append(CastleRights(self.current_castling_rights.wks, self.current_castling_rights.bks,
                                                    self.current_castling_rights.wqs, self.current_castling_rights.bqs))
+        if len(self.move_log) >= 9 and (self.move_log[-9] == self.move_log[-5] and self.move_log[-1] == self.move_log[-5]): 
+            check_stale = True
+            for i in range(-8,-4):
+                if not (self.move_log[i] == self.move_log[i+4]):
+                    check_stale = False
+                    break
+            self.stalemate = check_stale
 
     def undoMove(self):
         
@@ -203,7 +207,6 @@ class GameState:
                 self.stalemate = True
         else:
             self.checkmate = False
-            self.stalemate = False
 
         self.current_castling_rights = temp_castle_rights
         return moves

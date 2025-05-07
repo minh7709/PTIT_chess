@@ -38,7 +38,7 @@ def main():
     move_undone = False
     move_finder_process = None
     move_log_font = p.font.SysFont("Times New Roman", 15, True, False)
-    player_one = True  # if a human is playing white, then this will be True, else False
+    player_one = False  # if a human is playing white, then this will be True, else False
     player_two = False  # if a hyman is playing white, then this will be True, else False
 
     while running:
@@ -63,11 +63,14 @@ def main():
                         move = ChessEngine.Move(player_clicks[0], player_clicks[1], game_state.board)
                         for i in range(len(valid_moves)):
                             if move == valid_moves[i]:
-                                game_state.makeMove(valid_moves[i], is_AI=False)
+                                if move.is_pawn_promotion:
+                                    game_state.makeMove(valid_moves[i], pr_piece=choosePromotion(screen))
+                                else: game_state.makeMove(valid_moves[i])
                                 move_made = True
                                 animate = True
                                 square_selected = ()  # reset user clicks
                                 player_clicks = []
+                                break
                         if not move_made:
                             player_clicks = [square_selected]
 

@@ -157,24 +157,29 @@ def scoreBoard(game_state):
         for col in range(len(game_state.board[row])):
             piece = game_state.board[row][col]
             if piece != "--":
-                piece_position_score = 0
-                if piece[1] != "K":
-                    if len(game_state.move_log)//2 <= 12:
-                        piece_position_score = piece_position_scores[piece][0][row][col]
-                    else:
-                        piece_position_score = piece_position_scores[piece][1][row][col]
                 if piece[0] == "w":
                     white_cnt += 1
-                    white_score += piece_score[piece[1]] + piece_position_score
                 if piece[0] == "b":
                     black_cnt += 1
-                    black_score += piece_score[piece[1]] + piece_position_score
                 if piece[1] == "p" and piece[0] == "w":
                     white_pawns.append((row, col))
                     pawn_files_white[col] += 1
                 if piece[1] == "p" and piece[0] == "b":
                     black_pawns.append((row, col))
                     pawn_files_black[col] += 1
+
+    for row in range(len(game_state.board)):
+        for col in range(len(game_state.board[row])):
+            piece = game_state.board[row][col]
+            if piece != "--":
+                piece_position_score = 0
+                if white_cnt + black_cnt > 16:
+                    piece_position_score = piece_position_scores[piece][0][row][col]
+                else:
+                    piece_position_score = piece_position_scores[piece][1][row][col]
+                if piece[0] == 'w':
+                    white_score += piece_score[piece[1]] + piece_position_score
+                else: black_score += piece_score[piece[1]] + piece_position_score
 
     # King safety (an toàn của vua): đếm số quân cùng màu xung quanh vua (8 ô xung quanh)
     white_king_pos = game_state.white_king_location
@@ -187,41 +192,35 @@ def scoreBoard(game_state):
     if pawn_files_black[black_king_pos[1]] == 0:
         black_score -= NO_FRONT_PAWN  
     
-    if white_cnt + black_cnt > 16:
-        KING_SAFETY_BONUS = 0.05
-        white_king_pos = game_state.white_king_location
-        black_king_pos = game_state.black_king_location
-        wr, wc = white_king_pos
-        defenders = 0
-        for dr in [-1, 0, 1]:
-            for dc in [-1, 0, 1]:
-                if dr == 0 and dc == 0:
-                    continue
-                nr, nc = wr + dr, wc + dc
-                if 0 <= nr < 8 and 0 <= nc < 8:
-                    piece = game_state.board[nr][nc]
-                    if piece != "--" and piece[0] == "w":
-                        defenders += 1
-        white_score += KING_SAFETY_BONUS * defenders
-        # Đếm quân bảo vệ quanh vua đen
-        br, bc = black_king_pos
-        defenders = 0
-        for dr in [-1, 0, 1]:
-            for dc in [-1, 0, 1]:
-                if dr == 0 and dc == 0:
-                    continue
-                nr, nc = br + dr, bc + dc
-                if 0 <= nr < 8 and 0 <= nc < 8:
-                    piece = game_state.board[nr][nc]
-                    if piece != "--" and piece[0] == "b":
-                        defenders += 1
-        black_score += KING_SAFETY_BONUS * defenders
+    KING_SAFETY_BONUS = 0.05
+    white_king_pos = game_state.white_king_location
+    black_king_pos = game_state.black_king_location
+    wr, wc = white_king_pos
+    defenders = 0
+    for dr in [-1, 0, 1]:
+        for dc in [-1, 0, 1]:
+            if dr == 0 and dc == 0:
+                continue
+            nr, nc = wr + dr, wc + dc
+            if 0 <= nr < 8 and 0 <= nc < 8:
+                piece = game_state.board[nr][nc]
+                if piece != "--" and piece[0] == "w":
+                    defenders += 1
+    white_score += KING_SAFETY_BONUS * defenders
+    # Đếm quân bảo vệ quanh vua đen
+    br, bc = black_king_pos
+    defenders = 0
+    for dr in [-1, 0, 1]:
+        for dc in [-1, 0, 1]:
+            if dr == 0 and dc == 0:
+                continue
+            nr, nc = br + dr, bc + dc
+            if 0 <= nr < 8 and 0 <= nc < 8:
+                piece = game_state.board[nr][nc]
+                if piece != "--" and piece[0] == "b":
+                    defenders += 1
+    black_score += KING_SAFETY_BONUS * defenders
 
-        white_score += piece_position_scores["wK"][0][white_king_pos[0]][white_king_pos[1]]
-        black_score += piece_position_scores["bK"][0][black_king_pos[0]][black_king_pos[1]] 
-    else: 
-        white_score += piece_position_scores["wK"][1][white_king_pos[0]][white_king_pos[1]]
-        black_score += piece_position_scores["bK"][1][black_king_pos[0]][black_king_pos[1]]
 
     #pawns structure: cấu trúc tốt:
     # 1. Doubled
