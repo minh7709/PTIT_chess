@@ -8,7 +8,7 @@ from Book_move import opening_book
 
 CHECKMATE = 1000
 STALEMATE = 0
-
+    
 def findBestMove(game_state, valid_moves, return_queue, max_depth = 3):
     global next_move
     next_move = None
