@@ -4,7 +4,8 @@
 
 ---
 
-<h1 align="center"><em>PTIT_chess – Trò chơi cờ vua tích hợp Agent AI</em></h1>
+<h1 align="center"><em>TRÒ CHƠI CỜ VUA ỨNG DỤNG TRÍ TUỆ NHÂN TẠO
+</em></h1>
 
 ## 🎯 Bài toán đề ra:
 - **Mục tiêu**: Xây dựng một game cờ vua có giao diện đồ họa đơn giản, cho phép người chơi với máy (AI).  
@@ -34,12 +35,7 @@
    - Thiết kế Hàm sinh và kiểm tra nước đi hợp lệ, áp dụng/hoán đổi nước đi, phát hiện chiếu hết hoặc hòa cờ.
 
 3. **Thuật toán & AI – Negamax + Alpha–Beta + Quiescence search**:  
-   - Áp dụng thuật toán `Negamax + Alpha–Beta + Quiescence search` cùng với hàm đánh giá `heuristic` để tính toán điểm số ở các nút, ngoài ra thực hiện sắp xếp `MVV-LVA`cho nước đi trước khi chạy thuật toán.
-
----
-
-## 📊 Lưu đồ giải thuật:
-*ảnh
+   - Áp dụng thuật toán `Negamax + Alpha–Beta + Quiescence search` cùng với hàm đánh giá trạng thái bàn cờ để tính toán điểm số ở các nút, ngoài ra thực hiện sắp xếp `MVV-LVA`cho nước đi trước khi chạy thuật toán.
 
 ---
 
